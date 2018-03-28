@@ -41,6 +41,8 @@ class Task:
         self.start_node_id = start_node_id
         self.running_time_sum = 0
         self.task_running_flag = True
+        # TODO Yu: 看名字比较有歧义，node pool,node queue还有node dict太像了，尽量不要让人看注释才知道是干什么的
+        # 可能叫task queue之类的
         self.node_pool = []
         self.node_queue = queue.Queue()
         self.node_dict = {}
@@ -57,13 +59,17 @@ class Task:
         """
         graph_json = None
         config_json = None
+        # TODO Yu: extract function
         with open(os.path.join(resource_dir, '{0}.json'.format(self.task_id)), 'r') as graph:
             try:
                 graph_json = json.load(graph)
             except IOError as e:
+                # TODO Yu: static method可以直接用类名调用，不要实例化。
+                # 当然这里涉及异常处理的问题，可能要打印在不同文档里，有可能需要实例化。
                 ErrHandler().handle_err(e)
             except ValueError as e:
                 ErrHandler().handle_err(e)
+        # TODO Yu: extract function
         with open(os.path.join(resource_dir, '{0}_config.json'.format(self.task_id)), 'r') as config:
             try:
                 config_json = json.load(config)
