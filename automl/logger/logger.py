@@ -1,4 +1,3 @@
-from automl.errhandler.errhandler import ErrHandler
 from filepath import log_dir
 
 
@@ -13,4 +12,4 @@ class Logger:
             with open('%s/log.txt' % log_dir, 'a+') as log_file:
                 log_file.write(msg_n)
         except FileNotFoundError as e:
-            ErrHandler.handle_err(e)
+            print(e)
