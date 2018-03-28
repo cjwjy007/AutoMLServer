@@ -47,6 +47,7 @@ class Task:
         self.edge_pool = []
         self.create_task()
         self.init_indeg()
+        
 
     def create_task(self):
         """
