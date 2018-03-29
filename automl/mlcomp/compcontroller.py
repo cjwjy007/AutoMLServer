@@ -17,6 +17,30 @@ class CompController:
         pass
 
     @staticmethod
+    def get_data_names(graph_id, node_id):
+        """
+        get names of dataset which is connected to node
+        :param graph_id: string
+        ID of graph
+        :param node_id: string
+        ID of node
+        :return: array
+        list of data ids and names
+        """
+        try:
+            father_node_names = []
+            father_nodes = CompController._get_father_node_ids(graph_id, node_id)
+            for node in father_nodes:
+                data_info = {
+                    'id': CompController._get_nearest_ancestor_data(graph_id, node).id,
+                    'name': CompController._get_nearest_ancestor_data(graph_id, node).name
+                }
+                father_node_names.append(data_info)
+            return father_node_names
+        except Exception as e:
+            ErrHandler().handle_err(e)
+
+    @staticmethod
     def get_data_columns(graph_id, node_id):
         """
         get columns of dataset which is connected to node
@@ -28,9 +52,9 @@ class CompController:
         list of column names
         """
         try:
-            path = CompController._get_nearest_ancestor_data_path(graph_id, node_id)
-            if path:
-                df = pd.read_csv(path)
+            node = CompController._get_nearest_ancestor_data(graph_id, node_id)
+            if node:
+                df = pd.read_csv(node.path, nrows=1)
                 columns_list = df.columns.tolist()
                 return columns_list
             return []
@@ -51,9 +75,9 @@ class CompController:
         json information of chosen column
         """
         try:
-            path = CompController._get_nearest_ancestor_data_path(graph_id, node_id)
-            if path:
-                df = pd.read_csv(path)
+            node = CompController._get_nearest_ancestor_data(graph_id, node_id)
+            if node:
+                df = pd.read_csv(node.path, nrows=10000)
                 col_info = df[col_name].describe().to_dict()
                 # avoid int64 problems
                 return eval(str(col_info))
@@ -111,15 +135,41 @@ class CompController:
             return True
 
     @staticmethod
-    def _get_nearest_ancestor_data_path(graph_id, node_id):
+    def _get_father_node_ids(graph_id, node_id):
+        """
+        get father node ids
+        :param graph_id: string
+        ID of graph
+        :param node_id: string
+        ID of node
+        :return: array
+        node ids array
+        """
+        try:
+            with open(os.path.join(resource_dir, '{0}.json'.format(graph_id)), 'r') as graph:
+                graph_json = json.load(graph)
+            if graph_json:
+                father_nodes = []
+                edges = graph_json.get('source').get('edges')
+                cur_node_id = node_id
+                for edge in edges:
+                    if edge.get('target') == cur_node_id:
+                        father_nodes.append(edge.get('source'))
+                return father_nodes
+            return []
+        except Exception as e:
+            ErrHandler().handle_err(e)
+
+    @staticmethod
+    def _get_nearest_ancestor_data(graph_id, node_id):
         """
         get nearest ancestor dataset node, then return the dataset path
         :param graph_id: string
         ID of graph
         :param node_id: string
         ID of node
-        :return: string
-        path of dataset
+        :return: Node
+        dataset node object
         """
         try:
             with open(os.path.join(resource_dir, '{0}.json'.format(graph_id)), 'r') as graph:
@@ -146,7 +196,7 @@ class CompController:
                 if model_found:
                     if cur_node_id in config_json and 'dataId' in config_json[cur_node_id]:
                         data_id = config_json[cur_node_id]['dataId']
-                        return DataController.get_datapath_by_id(id=data_id)
+                        return DataController.get_data_by_id(id=data_id)
                 else:
                     return None
         except Exception as e:

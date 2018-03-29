@@ -6,7 +6,8 @@ from automl.response import Response
 @app.route('/task/task', methods=['POST'])
 def on_task_run():
     data = req.get_json()
-    TaskController.run_task.delay(graph_id=data['id'])
+    TaskController.run_task(graph_id=data['id'])
+    # TaskController.run_task.delay(graph_id=data['id'])
     return Response().ok(msg='success')
 
 

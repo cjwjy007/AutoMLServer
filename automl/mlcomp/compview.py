@@ -28,8 +28,16 @@ from automl.response import Response
 def components_handler():
     graph_id = req.args.get('graphId')
     node_id = req.args.get('nodeId')
-    columns = CompController.get_data_columns(graph_id=graph_id,node_id=node_id)
+    columns = CompController.get_data_columns(graph_id=graph_id, node_id=node_id)
     return Response().ok(msg='success', data=columns)
+
+
+@app.route('/config/datanames', methods=['GET'])
+def get_father_data_node_names():
+    graph_id = req.args.get('graphId')
+    node_id = req.args.get('nodeId')
+    names = CompController.get_data_names(graph_id=graph_id, node_id=node_id)
+    return Response().ok(msg='success', data=names)
 
 
 """

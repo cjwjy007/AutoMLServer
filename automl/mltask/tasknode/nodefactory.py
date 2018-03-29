@@ -1,4 +1,5 @@
 from automl.errhandler.errhandler import ErrHandler
+from automl.mltask.tasknode.combinationnode import CombinationNode
 from automl.mltask.tasknode.datanode import DataNode
 from automl.mltask.tasknode.nafillernode import NAFillerNode
 from automl.mltask.tasknode.columnsfilternode import ColumnsFilterNode
@@ -16,6 +17,8 @@ class NodeFactory:
                 return None
             elif node['type'] == 'model':
                 return DataNode(node=node)
+            elif node['type'] == 'multiinput_model' and node['desc'] == 'DataCombination':
+                return CombinationNode(node=node)
             elif node['type'] == 'preprocessing' and node['desc'] == 'UnconcernedFilter':
                 return ColumnsFilterNode(node=node)
             elif node['type'] == 'preprocessing' and node['desc'] == 'MissingValueFiller':

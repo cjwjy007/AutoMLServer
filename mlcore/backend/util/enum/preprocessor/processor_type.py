@@ -18,5 +18,5 @@ class ProcessorType(Enum):
     Drop = "drop"
     FillNa = "fillna"
     Onehot = "onehot"
-
+    Combination = 'combination'
 
