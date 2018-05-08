@@ -5,6 +5,7 @@ import pandas as pd
 
 from automl.errhandler.errhandler import ErrHandler
 from automl.mldata.datacontroller import DataController
+from automl.mlgraph.graphcontroller import GraphController
 from filepath import resource_dir
 
 
@@ -85,19 +86,21 @@ class CompController:
             ErrHandler().handle_err(e)
 
     @staticmethod
-    def get_config(graph_id, node_id):
+    def get_config(graph_id, node_id=None):
         """
         get config of node
         :param graph_id: string
         ID of graph
         :param node_id: string
-        ID of node
+        ID of node, return json-like all configs if not given
         :return: json
         json-like config
         """
         with open(os.path.join(resource_dir, '{0}_config.json'.format(graph_id)), 'r') as file_object:
             try:
                 json_config = json.load(file_object)
+                if node_id is None:
+                    return json_config
                 if node_id in json_config:
                     ret = json_config[node_id]
                 else:
@@ -121,12 +124,11 @@ class CompController:
         :return: bool
         return if successfully set config
         """
-        with open(os.path.join(resource_dir, '{0}_config.json'.format(graph_id)), 'r') as file_object:
-            try:
-                json_config = json.load(file_object)
-                json_config[node_id] = config
-            except ValueError as e:
-                json_config = {node_id: config}
+        json_config = CompController.get_config(graph_id)
+        try:
+            json_config[node_id] = config
+        except ValueError as e:
+            json_config = {node_id: config}
         with open(os.path.join(resource_dir, '{0}_config.json'.format(graph_id)), 'w') as file_object:
             try:
                 file_object.write(json.dumps(json_config))
@@ -146,8 +148,7 @@ class CompController:
         node ids array
         """
         try:
-            with open(os.path.join(resource_dir, '{0}.json'.format(graph_id)), 'r') as graph:
-                graph_json = json.load(graph)
+            graph_json = GraphController.get_graph(graph_id)
             if graph_json:
                 father_nodes = []
                 edges = graph_json.get('source').get('edges')
@@ -172,10 +173,8 @@ class CompController:
         dataset node object
         """
         try:
-            with open(os.path.join(resource_dir, '{0}.json'.format(graph_id)), 'r') as graph:
-                graph_json = json.load(graph)
-            with open(os.path.join(resource_dir, '{0}_config.json'.format(graph_id)), 'r') as config:
-                config_json = json.load(config)
+            graph_json = GraphController.get_graph(graph_id)
+            config_json = CompController.get_config(graph_id)
             if graph_json and config_json:
                 nodes = graph_json.get('source').get('nodes')
                 node_type_dict = {node['id']: node['type'] for node in nodes}

@@ -101,7 +101,7 @@ class GraphController:
                 desc = node.desc
                 inpath = str(node.inpath)
                 outpath = node.outpath
-                config = str(node.config)
+                config = str(node.config)[0:2048]
                 graph_node = GraphNode(graph_id, node_id, status, type, desc, inpath, outpath, config)
                 db.session.add(graph_node)
                 db.session.commit()

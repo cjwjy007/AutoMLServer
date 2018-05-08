@@ -7,6 +7,7 @@ import time
 import os
 
 from automl.errhandler.errhandler import ErrHandler
+from automl.mlcomp.compcontroller import CompController
 from automl.mlgraph.graphcontroller import GraphController
 from automl.mlproject.projectcontroller import ProjectController
 from automl.mltask.taskedge import TaskEdge
@@ -55,22 +56,8 @@ class Task:
         run all nodes or run from a specific node are supported now
         :return:
         """
-        graph_json = None
-        config_json = None
-        with open(os.path.join(resource_dir, '{0}.json'.format(self.task_id)), 'r') as graph:
-            try:
-                graph_json = json.load(graph)
-            except IOError as e:
-                ErrHandler().handle_err(e)
-            except ValueError as e:
-                ErrHandler().handle_err(e)
-        with open(os.path.join(resource_dir, '{0}_config.json'.format(self.task_id)), 'r') as config:
-            try:
-                config_json = json.load(config)
-            except ValueError as e:
-                ErrHandler().handle_err(e)
-            except IOError as e:
-                ErrHandler().handle_err(e)
+        graph_json = GraphController.get_graph(self.task_id)
+        config_json = CompController.get_config(self.task_id)
         if graph_json and config_json:
             nodes = graph_json.get('source').get('nodes')
             edges = graph_json.get('source').get('edges')

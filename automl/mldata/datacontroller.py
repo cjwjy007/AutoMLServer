@@ -15,6 +15,7 @@ class DataController:
     """
     DataController handle things about uploaded dataset
     """
+
     def __init__(self):
         pass
 
@@ -27,7 +28,7 @@ class DataController:
         :return: bool
         return if the file is allowed
         """
-        allowed = {'txt', 'csv'}
+        allowed = {'txt', 'csv', 'npz'}
         return '.' in filename and filename.split('.')[-1] in allowed
 
     @staticmethod
