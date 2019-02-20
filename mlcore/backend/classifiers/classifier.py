@@ -53,6 +53,9 @@ class Classifier:
         if self._require_tune:
             self.param_tuning(data)
         self._clf.fit(X, y)
+        columns_mask = data.columns.tolist()
+        columns_mask.remove(target)
+        self._clf.columns_mask = columns_mask
         if self._checkpoint:
             if self._checkpoint_path is None:
                 path = checkpoint.get_checkpoint("model", self.get_class_name())

@@ -127,7 +127,7 @@ class CompController:
         json_config = CompController.get_config(graph_id)
         try:
             json_config[node_id] = config
-        except ValueError as e:
+        except Exception as e:
             json_config = {node_id: config}
         with open(os.path.join(resource_dir, '{0}_config.json'.format(graph_id)), 'w') as file_object:
             try:

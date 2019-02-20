@@ -1,7 +1,9 @@
 from automl.errhandler.errhandler import ErrHandler
+from automl.mltask.tasknode.binclabalnode import BinaryBalanceNode
 from automl.mltask.tasknode.combinationnode import CombinationNode
 from automl.mltask.tasknode.datanode import DataNode
 from automl.mltask.tasknode.dlseqnode import DLSeqNode
+from automl.mltask.tasknode.featselnode import FeatureSelectionNode
 from automl.mltask.tasknode.nafillernode import NAFillerNode
 from automl.mltask.tasknode.columnsfilternode import ColumnsFilterNode
 from automl.mltask.tasknode.lrnode import LogisticRegressionNode
@@ -29,6 +31,10 @@ class NodeFactory:
                 return NAFillerNode(node=node)
             elif node['type'] == 'preprocessing' and node['desc'] == 'OneHotEncoder':
                 return OneHotNode(node=node)
+            elif node['type'] == 'preprocessing' and node['desc'] == 'FeatureSelection':
+                return FeatureSelectionNode(node=node)
+            elif node['type'] == 'preprocessing' and node['desc'] == 'BinClaBal':
+                return BinaryBalanceNode(node=node)
             elif node['type'] == 'multiinput_predition' and node['desc'] == 'Prediction':
                 return PredictionNode(node=node)
             elif node['type'] == 'alg' and node['desc'] == 'LogisticRegression':
